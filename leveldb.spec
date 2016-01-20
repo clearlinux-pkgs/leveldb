@@ -4,12 +4,13 @@
 #
 Name     : leveldb
 Version  : 1.18
-Release  : 1
+Release  : 2
 URL      : https://github.com/google/leveldb/archive/v1.18.tar.gz
 Source0  : https://github.com/google/leveldb/archive/v1.18.tar.gz
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : BSD-3-Clause
+Requires: leveldb-lib
 Patch1: 0112-makefile_install.patch
 
 %description
@@ -19,10 +20,19 @@ Authors: Sanjay Ghemawat (sanjay@google.com) and Jeff Dean (jeff@google.com)
 %package dev
 Summary: dev components for the leveldb package.
 Group: Development
+Requires: leveldb-lib
 Provides: leveldb-devel
 
 %description dev
 dev components for the leveldb package.
+
+
+%package lib
+Summary: lib components for the leveldb package.
+Group: Libraries
+
+%description lib
+lib components for the leveldb package.
 
 
 %prep
@@ -38,23 +48,25 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-/usr/local/lib/libleveldb.so
-/usr/local/lib/libleveldb.so.1
-/usr/local/lib/libleveldb.so.1.18
 
 %files dev
 %defattr(-,root,root,-)
-/usr/local/include/leveldb/c.h
-/usr/local/include/leveldb/cache.h
-/usr/local/include/leveldb/comparator.h
-/usr/local/include/leveldb/db.h
-/usr/local/include/leveldb/dumpfile.h
-/usr/local/include/leveldb/env.h
-/usr/local/include/leveldb/filter_policy.h
-/usr/local/include/leveldb/iterator.h
-/usr/local/include/leveldb/options.h
-/usr/local/include/leveldb/slice.h
-/usr/local/include/leveldb/status.h
-/usr/local/include/leveldb/table.h
-/usr/local/include/leveldb/table_builder.h
-/usr/local/include/leveldb/write_batch.h
+/usr/include/leveldb/c.h
+/usr/include/leveldb/cache.h
+/usr/include/leveldb/comparator.h
+/usr/include/leveldb/db.h
+/usr/include/leveldb/dumpfile.h
+/usr/include/leveldb/env.h
+/usr/include/leveldb/filter_policy.h
+/usr/include/leveldb/iterator.h
+/usr/include/leveldb/options.h
+/usr/include/leveldb/slice.h
+/usr/include/leveldb/status.h
+/usr/include/leveldb/table.h
+/usr/include/leveldb/table_builder.h
+/usr/include/leveldb/write_batch.h
+/usr/lib64/*.so
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/*.so.*
