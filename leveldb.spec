@@ -4,7 +4,7 @@
 #
 Name     : leveldb
 Version  : 1.18
-Release  : 2
+Release  : 3
 URL      : https://github.com/google/leveldb/archive/v1.18.tar.gz
 Source0  : https://github.com/google/leveldb/archive/v1.18.tar.gz
 Summary  : No detailed summary available
