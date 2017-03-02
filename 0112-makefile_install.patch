@@ -3,12 +3,14 @@ Description: Improvements to the Makefile.
  Add an 'install' target.
 Author: Alessio Treglia <alessio@debian.org>
 Forwarded: http://code.google.com/p/leveldb/issues/detail?id=27
+
+Rebased for v1.20: Ikey Doherty <michael.i.doherty@intel.com>
 ---
  Makefile |   15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
---- leveldb.orig/Makefile
-+++ leveldb/Makefile
+--- a/Makefile
++++ b/Makefile
 @@ -2,6 +2,10 @@
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file. See the AUTHORS file for names of contributors.
@@ -20,21 +22,23 @@ Forwarded: http://code.google.com/p/leveldb/issues/detail?id=27
  #-----------------------------------------------
  # Uncomment exactly one of the lines labelled (A), (B), and (C) below
  # to switch between compilation modes.
-@@ -99,6 +103,17 @@ endif  # PLATFORM_SHARED_EXT
+@@ -141,6 +145,19 @@ endif  # PLATFORM_SHARED_EXT
  
- all: $(SHARED) $(LIBRARY)
+ all: $(SHARED_LIBS) $(SHARED_PROGRAMS) $(STATIC_OUTDIR)/libleveldb.a $(STATIC_OUTDIR)/libmemenv.a $(STATIC_PROGRAMS)
  
++LIBRARY = $(STATIC_OUTDIR)/libleveldb.a
 +install: all
 +	install -d $(DESTDIR)$(PREFIX)/$(LIBDIR)
 +	install -d $(DESTDIR)$(PREFIX)/$(INCLUDEDIR)/leveldb
 +	install -m 0644 $(LIBRARY) $(DESTDIR)$(PREFIX)/$(LIBDIR)
 +ifneq ($(PLATFORM_SHARED_EXT),)
-+	install -m 0644 $(SHARED3) $(DESTDIR)$(PREFIX)/$(LIBDIR)
-+	cd $(DESTDIR)$(PREFIX)/$(LIBDIR) && ln -sf $(SHARED3) $(SHARED2)
-+	cd $(DESTDIR)$(PREFIX)/$(LIBDIR) && ln -sf $(SHARED3) $(SHARED1)
++	install -m 0644 $(SHARED_OUTDIR)/$(SHARED_LIB3) $(DESTDIR)$(PREFIX)/$(LIBDIR)
++	cd $(DESTDIR)$(PREFIX)/$(LIBDIR) && ln -sf $(SHARED_LIB3) $(SHARED_LIB2)
++	cd $(DESTDIR)$(PREFIX)/$(LIBDIR) && ln -sf $(SHARED_LIB3) $(SHARED_LIB1)
 +endif
 +	install -m 0644 include/leveldb/* $(DESTDIR)$(PREFIX)/$(INCLUDEDIR)/leveldb
 +
- check: all $(PROGRAMS) $(TESTS)
- 	for t in $(TESTS); do echo "***** Running $$t"; ./$$t || exit 1; done
++
+ check: $(STATIC_PROGRAMS)
+ 	for t in $(notdir $(TESTS)); do echo "***** Running $$t"; $(STATIC_OUTDIR)/$$t || exit 1; done
  
