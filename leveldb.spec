@@ -4,7 +4,7 @@
 #
 Name     : leveldb
 Version  : 1.20
-Release  : 6
+Release  : 7
 URL      : https://github.com/google/leveldb/archive/v1.20.tar.gz
 Source0  : https://github.com/google/leveldb/archive/v1.20.tar.gz
 Summary  : No detailed summary available
