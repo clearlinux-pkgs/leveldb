@@ -4,7 +4,7 @@
 #
 Name     : leveldb
 Version  : 1.22
-Release  : 9
+Release  : 10
 URL      : https://github.com/google/leveldb/archive/1.22/leveldb-1.22.tar.gz
 Source0  : https://github.com/google/leveldb/archive/1.22/leveldb-1.22.tar.gz
 Summary  : A fast and lightweight key/value database library
