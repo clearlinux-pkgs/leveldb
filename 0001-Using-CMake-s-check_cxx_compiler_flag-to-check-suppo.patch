@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Chris Mumford <cmumford@google.com>
+Date: Tue, 1 Oct 2019 13:00:35 -0700
+Subject: [PATCH] Using CMake's check_cxx_compiler_flag to check support for
+ -Wthread-safety.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Previously used check_cxx_source_compiles to attempt a
+build to determine support for clang thread safety checks.
+
+This change is to support static analysis of the leveldb source by
+lgtm.com (using Semmle). It failed to build with the following error:
+
+```
+[2019-07-04 22:29:58] [build] c++: error: unrecognized command line option ‘-Wthread-safety’; did you mean ‘-fthread-jumps’?
+[2019-07-04 22:30:02] [build] make[2]: *** [CMakeFiles/leveldb.dir/build.make:66: CMakeFiles/leveldb.dir/db/builder.cc.o] Error 1
+```
+
+PiperOrigin-RevId: 272275528
+Upstream-Status: Backport
+Reference: https://github.com/google/leveldb/commit/370d532a00581ca
+---
+ CMakeLists.txt | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1409c06..8acb1db 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -48,25 +48,12 @@ include(CheckCXXSymbolExists)
+ check_cxx_symbol_exists(fdatasync "unistd.h" HAVE_FDATASYNC)
+ check_cxx_symbol_exists(F_FULLFSYNC "fcntl.h" HAVE_FULLFSYNC)
+ 
+-include(CheckCXXSourceCompiles)
+-
+ # Test whether -Wthread-safety is available. See
+ # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
+-# -Werror is necessary because unknown attributes only generate warnings.
+-set(OLD_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
+-list(APPEND CMAKE_REQUIRED_FLAGS -Werror -Wthread-safety)
+-check_cxx_source_compiles("
+-struct __attribute__((lockable)) Lock {
+-  void Acquire() __attribute__((exclusive_lock_function()));
+-  void Release() __attribute__((unlock_function()));
+-};
+-struct ThreadSafeType {
+-  Lock lock_;
+-  int data_ __attribute__((guarded_by(lock_)));
+-};
+-int main() { return 0; }
+-"  HAVE_CLANG_THREAD_SAFETY)
+-set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
++include(CheckCXXCompilerFlag)
++check_cxx_compiler_flag(-Wthread-safety HAVE_CLANG_THREAD_SAFETY)
++
++include(CheckCXXSourceCompiles)
+ 
+ # Test whether C++17 __has_include is available.
+ check_cxx_source_compiles("

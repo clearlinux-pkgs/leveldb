@@ -4,16 +4,17 @@
 #
 Name     : leveldb
 Version  : 1.22
-Release  : 10
+Release  : 11
 URL      : https://github.com/google/leveldb/archive/1.22/leveldb-1.22.tar.gz
 Source0  : https://github.com/google/leveldb/archive/1.22/leveldb-1.22.tar.gz
-Summary  : A fast and lightweight key/value database library
+Summary  : No detailed summary available
 Group    : Development/Tools
 License  : BSD-3-Clause
 Requires: leveldb-lib = %{version}-%{release}
 Requires: leveldb-license = %{version}-%{release}
 BuildRequires : buildreq-cmake
 BuildRequires : glibc-dev
+Patch1: 0001-Using-CMake-s-check_cxx_compiler_flag-to-check-suppo.patch
 
 %description
 **LevelDB is a fast key-value storage library written at Google that provides an ordered mapping from string keys to string values.**
@@ -48,38 +49,41 @@ license components for the leveldb package.
 
 %prep
 %setup -q -n leveldb-1.22
+cd %{_builddir}/leveldb-1.22
+%patch1 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1556981660
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1604617145
 mkdir -p clr-build
 pushd clr-build
+export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FCFLAGS="$FFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FFLAGS="$FFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 %cmake ..
 make  %{?_smp_mflags}
 popd
 
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 cd clr-build; make test
 
 %install
-export SOURCE_DATE_EPOCH=1556981660
+export SOURCE_DATE_EPOCH=1604617145
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/leveldb
-cp LICENSE %{buildroot}/usr/share/package-licenses/leveldb/LICENSE
+cp %{_builddir}/leveldb-1.22/LICENSE %{buildroot}/usr/share/package-licenses/leveldb/95dda2529b4ac0e8527bc04026f1f97aea87672a
 pushd clr-build
 %make_install
 popd
@@ -117,4 +121,4 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/leveldb/LICENSE
+/usr/share/package-licenses/leveldb/95dda2529b4ac0e8527bc04026f1f97aea87672a
